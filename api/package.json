@@ -13,6 +13,8 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "mongoose": "^5.4.22"
+    "knex": "^0.16.3",
+    "mongoose": "^5.4.22",
+    "pg": "^7.9.0"
   }
 }
