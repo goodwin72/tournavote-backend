@@ -47,6 +47,16 @@ const authorizeRequest = function(req){
   return usernameMatch && passwordMatch;
 };
 
+const checkIfLoggedIn = function(req){
+  if(req.session.username){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
 module.exports.getUserData = getUserData;
 module.exports.checkForLoginMatch = checkForLoginMatch;
 module.exports.authorizeRequest = authorizeRequest;
+module.exports.checkIfLoggedIn = checkIfLoggedIn;

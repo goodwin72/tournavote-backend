@@ -54,26 +54,34 @@ app.get('/api/', function(req, res){
 
 //Login
 app.post('/api/login', function(req, res){
-   helpers.checkForLoginMatch(req.body.username, req.body.password, (err, match) => {
-      if(match){
-         //console.log("Match: " + match.id);
-         req.session.username = req.body.username;
-         req.session.userid = match.id;
-         console.log("Logged in " + req.session.username);
-         res.status(200).send("Logged in");
-      }
-      else{
-         res.status(400).send("Invalid login");
-      }
-   });
+   if(!helpers.checkIfLoggedIn(req)){
+      helpers.checkForLoginMatch(req.body.username, req.body.password, (err, match) => {
+         if(match){
+            //console.log("Match: " + match.id);
+            req.session.username = req.body.username;
+            req.session.userid = match.id;
+            console.log("Logged in " + req.session.username);
+            res.status(200).send("Logged in");
+         }
+         else{
+            res.status(400).send("Invalid login");
+         }
+      });
+   }
+   else{
+      res.status(400).send("Already logged in as " + req.session.username);
+   }
 });
 
 //Logout
 app.post('/api/logout', function(req, res){
-   if(req.session){
+   if(helpers.checkIfLoggedIn(req)){
       console.log("Logged out " + req.session.username);
       req.session.destroy();
       res.clearCookie(COOKIE_NAME).status(200).send("Logged out.");
+   }
+   else{
+      res.status(400).send("Can't log out - not logged in.");
    }
 });
 
