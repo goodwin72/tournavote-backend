@@ -6,6 +6,9 @@ const router = express.Router();
 const pool = require("../connectionPool");
 const bcrypt = require('bcrypt');
 
+//Requires - Local
+const constants = require('../constants');
+
 const getUserData = function(username, cb){
   pool.query('SELECT * FROM users WHERE name = $1', [username], (error, results) => {
     if(error){
@@ -48,7 +51,7 @@ const authorizeRequest = function(req){
 };
 
 const checkIfLoggedIn = function(req){
-  if(req.session.username){
+  if(req.session.userid){
     return true;
   }
   else{
@@ -56,7 +59,20 @@ const checkIfLoggedIn = function(req){
   }
 }
 
+//why is clearcookie on res?
+const clearSession = function(req, res){
+  if(checkIfLoggedIn(req)){
+    req.session.destroy();
+    res.clearCookie(constants.COOKIE_NAME);
+    return true;
+ }
+ else{
+    return false;
+ }
+}
+
 module.exports.getUserData = getUserData;
 module.exports.checkForLoginMatch = checkForLoginMatch;
 module.exports.authorizeRequest = authorizeRequest;
 module.exports.checkIfLoggedIn = checkIfLoggedIn;
+module.exports.clearSession = clearSession;

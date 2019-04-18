@@ -123,20 +123,24 @@ function updateUser(req, res){
 }
 
 function deleteUser(req, res){
-  const userId = req.params.userId;
+  const loggedIn = helpers.checkIfLoggedIn(req);
 
-  if (validator.isUUID(userId, 4)){
-    pool.query('DELETE FROM users WHERE id = $1', [userId], (error, results) => {
+  if(loggedIn){
+    pool.query('DELETE FROM users WHERE id = $1', [req.session.userid], (error, results) => {
       if (error) {
         res.status(400).send(error);
       }
       else{
-        res.status(200).json("User successfully deleted")
+        const sessionCleared = helpers.clearSession(req, res);
+
+        if(sessionCleared){
+          res.status(200).json("User successfully deleted, session cleared.");
+        }
+        else{
+          res.status(400).json("User successfully deleted, session not cleared. This should never happen...?");
+        }      
       }
-    });
-  }
-  else{
-    res.status(400).send("Error in request");
+    })
   }
 }
 

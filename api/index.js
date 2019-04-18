@@ -11,14 +11,12 @@ const uuidv4 = require('uuid/v4');
 //Requires - Local
 const pool = require("./connectionPool");
 const helpers = require('./helpers');
+const constants = require('./constants');
 
 //Routes
 var usersRoute = require('./routes/users')
 var tournamentsRoute = require('./routes/tournaments')
 //var optionsRoute = require('./routes/options')
-
-//Constants
-const COOKIE_NAME = "tournavote";
 
 //Body parser
 app.use(bodyParser.json());
@@ -33,7 +31,7 @@ app.use(session({
      pool : pool,
      tableName : 'user_sessions'
    }),
-   name: COOKIE_NAME,
+   name: constants.COOKIE_NAME,
    secret: process.env.SESSION_SECRET,
    resave: false,
    saveUninitialized: false,
@@ -75,13 +73,15 @@ app.post('/api/login', function(req, res){
 
 //Logout
 app.post('/api/logout', function(req, res){
-   if(helpers.checkIfLoggedIn(req)){
-      console.log("Logged out " + req.session.username);
-      req.session.destroy();
-      res.clearCookie(COOKIE_NAME).status(200).send("Logged out.");
+   const sessionUsername = req.session.username;
+   const sessionCleared = helpers.clearSession(req, res);
+
+   if(sessionCleared){
+      console.log("Logged out " + sessionUsername);
+      res.status(200).send("Logged out.");
    }
    else{
-      res.status(400).send("Can't log out - not logged in.");
+      res.status(400).send("Failed to log out - possibly not logged in?");
    }
 });
 
