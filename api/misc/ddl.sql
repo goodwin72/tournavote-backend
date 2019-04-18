@@ -35,6 +35,7 @@ CREATE TABLE options (
   choice1 VARCHAR(128) NOT NULL,
   choice2 VARCHAR(128) NOT NULL,
   currently_active boolean DEFAULT TRUE,
+  tournament_round integer NOT NULL, /*added*/
   
   PRIMARY KEY (id),
   FOREIGN KEY (tournament_id) REFERENCES tournaments(id) ON DELETE CASCADE
