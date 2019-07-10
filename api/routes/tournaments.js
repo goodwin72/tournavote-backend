@@ -12,8 +12,11 @@ router.route('/')
 
 router.route('/:tournamentId')
   .get(getTournament)
-  .put(updateTournament)
   .delete(deleteTournament)
+
+router.route('/:tournamentId/:userId')
+  .post(addUserToTournament)
+  .delete(removeUserFromTournament)
 
 //-----------------------------------------
 
@@ -64,10 +67,24 @@ function createTournament(req, res){
 }
 
 function getTournament(req, res){
+  helpers.getTournamentData(req.params.tournamentId, (error, results) => {
+    if(error){
+      res.status(400).send(error);
+    }
+    else if (!results.rows){
+      res.status(400).send("No tournament with provided ID found.")
+    }
+    else{
+      res.status(200).send(results.rows[0]);
+    }
+  });
+}
+
+function addUserToTournament(req, res){
 
 }
 
-function updateTournament(req, res){
+function removeUserFromTournament(req, res){
 
 }
 

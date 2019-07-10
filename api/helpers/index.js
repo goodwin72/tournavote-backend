@@ -29,6 +29,12 @@ const getUserData = function(req, cb){
   }
 }
 
+const getTournamentData = function(tournament_id, cb){
+  pool.query('SELECT * FROM tournaments WHERE id = $1', [tournament_id], (error, results) => {
+    cb(error, results);
+  });
+}
+
 const checkForLoginMatch = function(username, password, cb){
   pool.query('SELECT * FROM users WHERE name = $1', [username], (error, results) => {
     if(!error && results.rows[0]){
@@ -93,6 +99,7 @@ const getParticipantData = function(user_id, tournament_id, cb){
 }
 
 module.exports.getUserData = getUserData;
+module.exports.getTournamentData = getTournamentData;
 module.exports.checkForLoginMatch = checkForLoginMatch;
 module.exports.authorizeRequest = authorizeRequest;
 module.exports.checkIfLoggedIn = checkIfLoggedIn;
