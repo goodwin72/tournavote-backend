@@ -5,19 +5,28 @@ const session = require('express-session');
 const router = express.Router();
 const pool = require("../connectionPool");
 const bcrypt = require('bcrypt');
+const validator = require('validator');
 
 //Requires - Local
 const constants = require('../constants');
 
-const getUserData = function(username, cb){
-  pool.query('SELECT * FROM users WHERE name = $1', [username], (error, results) => {
-    if(error){
-      cb(error, null);
-    }
-    else{
-      cb(error, results.rows[0]);
-    }
-  });
+const getUserData = function(req, cb){
+  const userId = req.params.userId;
+
+  if (validator.isUUID(userId, 4)){
+    pool.query('SELECT * FROM users WHERE id = $1', [userId], (error, results) => {
+      if (error) {
+        cb(error, null);
+      }
+      else{
+        //console.log(results.rows[0]);
+        cb(error, results.rows[0]);
+      }
+    });
+  }
+  else{
+    res.status(400).send("Error in request");
+  }
 }
 
 const checkForLoginMatch = function(username, password, cb){

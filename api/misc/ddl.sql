@@ -13,6 +13,7 @@ CREATE TABLE tournaments (
   in_progress BOOLEAN DEFAULT FALSE,
   current_round INT DEFAULT 0,
   rounds_remaining INT DEFAULT 0,
+  /* require an admin? */
 
   PRIMARY KEY (id)
 );

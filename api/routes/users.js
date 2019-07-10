@@ -65,28 +65,21 @@ function createUser(req, res){
 }
 
 function getUser(req, res){
-  const userId = req.params.userId;
-
-  if (validator.isUUID(userId, 4)){
-    pool.query('SELECT * FROM users WHERE id = $1', [userId], (error, results) => {
-      if (error) {
-        res.status(400).send(error);
-        //throw err; //???
-      }
-      else{
-        res.status(200).json(results.rows)
-      }
-    });
-  }
-  else{
-    res.status(400).send("Error in request");
-  }
+  helpers.getUserData(req, (error, results) => {
+    if(error){
+      res.status(400).send(error);
+      //throw err; //???
+    }
+    else{
+      res.status(200).json(results);
+    }
+  });
 }
 
 function updateUser(req, res){
   //Get current data
   let userData;
-  helpers.getUserData(req.session.username, (error, results) => {
+  helpers.getUserData(req.session.userid, (error, results) => {
     if(error){
       res.status(400).send("Error in request");
     }

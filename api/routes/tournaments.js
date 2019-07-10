@@ -27,16 +27,30 @@ function getTournaments(req, res){
 }
 
 function createTournament(req, res){
+  //If a user is logged in...
   if(helpers.checkIfLoggedIn(req)){
     //If the request gave a name for the tournament...
     if(req.body.name){
-      pool.query('INSERT INTO tournaments (name) VALUES ($1)', 
+      //Make a new tournament.
+      pool.query('INSERT INTO tournaments (name) VALUES ($1) RETURNING id', 
           [req.body.name], (error, results) => {
           if (error) {
             res.status(400).send(error);
           }
           else{
-            res.status(200).json(results.rows); //empty?
+            //Add the user as an admin.
+            console.log(req.session.userid);
+            console.log(results.rows[0].id);
+            pool.query('INSERT INTO participants (user_id, tournament_id, is_admin) VALUES ($1, $2, true)', 
+            [req.session.userid, results.rows[0].id], (error, results) => {
+              if(error) {
+                res.status(400).send(error);
+              }
+              else{
+                //res.status(200).json(results.rows); //empty?
+                res.status(200).send("Succesfully added tournament and assigned logged-in user as admin")
+              }
+            });
           }
         });
     }
