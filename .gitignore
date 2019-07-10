@@ -1,6 +1,6 @@
 *.env 
 /data
-/data-backup
+/data-backups
 scratchpad.txt
 *.directory
 node_modules/
