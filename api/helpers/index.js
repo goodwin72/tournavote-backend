@@ -75,9 +75,21 @@ const clearSession = function(req, res){
     res.clearCookie(constants.COOKIE_NAME);
     return true;
  }
- else{
+  else{
     return false;
  }
+}
+
+const getParticipantData = function(user_id, tournament_id, cb){
+  if (validator.isUUID(user_id, 4)){
+    pool.query('SELECT * FROM participants WHERE user_id=$1 AND tournament_id=$2', 
+    [user_id, tournament_id], (error, results) => {
+      cb(error, results);
+    });
+  }  
+  else{
+    res.status(400).send("Error in request");
+  }
 }
 
 module.exports.getUserData = getUserData;
@@ -85,3 +97,4 @@ module.exports.checkForLoginMatch = checkForLoginMatch;
 module.exports.authorizeRequest = authorizeRequest;
 module.exports.checkIfLoggedIn = checkIfLoggedIn;
 module.exports.clearSession = clearSession;
+module.exports.getParticipantData = getParticipantData;

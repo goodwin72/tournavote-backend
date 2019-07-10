@@ -39,8 +39,8 @@ function createTournament(req, res){
           }
           else{
             //Add the user as an admin.
-            console.log(req.session.userid);
-            console.log(results.rows[0].id);
+            //console.log(req.session.userid);
+            //console.log(results.rows[0].id);
             pool.query('INSERT INTO participants (user_id, tournament_id, is_admin) VALUES ($1, $2, true)', 
             [req.session.userid, results.rows[0].id], (error, results) => {
               if(error) {
@@ -72,7 +72,28 @@ function updateTournament(req, res){
 }
 
 function deleteTournament(req, res){
-
+  //If a user is logged in...
+  if(helpers.checkIfLoggedIn(req)){
+    //If the user is an admin of the tournament...
+    helpers.getParticipantData(req.session.userid, req.params.tournamentId, (error, results) => {
+      if(error){
+        res.status(400).send(error);
+      }
+      else if(!results.rows.length){
+        res.status(400).send("Coud not delete tournament - does it exist? Are you an admin of it?")
+      }
+      else{
+        pool.query('DELETE FROM tournaments WHERE id = $1', [req.params.tournamentId], (error, results) => {
+          if (error) {
+            res.status(400).send(error);
+          }
+          else{
+            res.status(200).send("Successfully deleted tournament.")
+          }
+        });
+      }
+    });
+  }
 }
 
 module.exports = router;
